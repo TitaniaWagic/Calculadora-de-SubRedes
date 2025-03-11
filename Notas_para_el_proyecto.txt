@@ -12,3 +12,8 @@ Calcular Broadcast, primera dirección, ultima dirección, mascara de subred, ho
 Segundo Calculo
 Calcular mascara de subred minima con Dirección Ip y Hosts por subred
 
+-Cosas a implementar: 
+
+Calcular subred con Dirección ip y mascara de red en formato decimal punteado (255.255.255.0) o como un prefijo de longitud (por ejemplo, /24).
+
+Calcular Host validos por subred con Dirección IP y y mascara de red en formato decimal punteado (255.255.255.0) o como un prefijo de longitud (por ejemplo, /24).
