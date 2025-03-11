@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Subredes</title>
+</head>
+<body>
+    <h2>Calculadora de Subredes</h2>
+    <form method="POST">
+        <label>IP Base:</label>
+        <input type="text" name="ip" required placeholder="Ej: 192.168.2.0">
+        <br>
+        <label> Ordena de mayor a menor</label>
+        <br>
+        <label>Conexiones necesarias (separadas por comas, opcional):</label>
+        <input type="text" name="conexiones" placeholder="Ej: 3, 5, 20">
+        <br>
+        <label>Hosts por subred (opcional):</label>
+        <input type="number" name="hosts" placeholder="Ej: 459">
+        <br>
+        <button type="submit">Calcular</button>
+    </form>
+
+    {% if mascara_calculada %}
+        <h3>Resultados:</h3>
+        <p>La máscara de subred mínima necesaria es: <strong>/{{ mascara_calculada }}</strong></p>
+    {% endif %}
+
+    {% if subredes %}
+        <h3>Resultados:</h3>
+        <table border="1">
+            <tr>
+                <th>Identificador</th>
+                <th>Hosts Necesarios</th>
+                <th>Hosts Reales</th>
+                <th>Máscara de Subred</th>
+                <th>Primera IP</th>
+                <th>Última IP</th>
+                <th>Broadcast</th>
+            </tr>
+            {% for subred in subredes %}
+            <tr>
+                <td>{{ subred.id }}</td>
+                <td>{{ subred.hosts_necesarios }}</td>
+                <td>{{ subred.hosts_reales }}</td>
+                <td>{{ subred.mascara }}</td>
+                <td>{{ subred.primera_ip }}</td>
+                <td>{{ subred.ultima_ip }}</td>
+                <td>{{ subred.broadcast }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
