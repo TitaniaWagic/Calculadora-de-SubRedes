@@ -3,6 +3,7 @@ import ipaddress
 import math
 #Podes leer esta mamada?
 #Si puedo xd
+#Hola hola! :D
 app = Flask(__name__)
 
 def obtener_clase(ip):
