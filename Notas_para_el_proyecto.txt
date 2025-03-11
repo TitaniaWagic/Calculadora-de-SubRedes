@@ -2,6 +2,7 @@ Calculadora de redes
 cd "Direccion donde estan los codigos"
 python Backend.py
 http://127.0.0.1:5000
+Para instalar Flask usando el cmd: pip install flask
 
 -Calculadora de subredes
 
