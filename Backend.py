@@ -52,7 +52,7 @@ def calcular_subredes(ip_base, conexiones):
     
     return resultados
 
-#mba'e la he'usave heeeeee
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
