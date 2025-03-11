@@ -1,9 +1,7 @@
 from flask import Flask, render_template, request
 import ipaddress
 import math
-#Podes leer esta mamada?
-#Holaaaa
-#Hola hola! :D
+
 app = Flask(__name__)
 
 def obtener_clase(ip):
@@ -51,8 +49,6 @@ def calcular_subredes(ip_base, conexiones):
         subred_actual = ipaddress.IPv4Network((int(subred.broadcast_address) + 1, nueva_mascara), strict=False)
     
     return resultados
-
-
 
 @app.route("/", methods=["GET", "POST"])
 def index():
