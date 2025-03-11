@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request
 import ipaddress
 import math
-#Podes leer esta mamada????
+#Podes leer esta mamada?
+#Si puedo xd
 app = Flask(__name__)
 
 def obtener_clase(ip):
