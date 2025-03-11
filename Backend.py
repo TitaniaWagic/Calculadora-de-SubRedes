@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import ipaddress
 import math
 #Podes leer esta mamada?
-#Si puedo xd
+#Holaaaa
 #Hola hola! :D
 app = Flask(__name__)
 
