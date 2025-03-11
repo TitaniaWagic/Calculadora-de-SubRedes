@@ -1,0 +1,13 @@
+Calculadora de redes
+cd "Direccion donde estan los codigos"
+python Backend.py
+http://127.0.0.1:5000
+
+-Calculadora de subredes
+
+Primer calculo
+Calcular Broadcast, primera dirección, ultima dirección, mascara de subred, hosts necesarios, hosts reales con la dirección IP y cantidad de conexiones
+
+Segundo Calculo
+Calcular mascara de subred minima con Dirección Ip y Hosts por subred
+
