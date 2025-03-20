@@ -50,6 +50,56 @@ def calcular_subredes(ip_base, conexiones):
     
     return resultados
 
+#Calcular subred con Dirección ip y mascara de red en formato decimal punteado (255.255.255.0) o 
+#como un prefijo de longitud (por ejemplo, /24).
+
+def calcular_subredes_conIPMascara(ip_base, mascara):
+    """Calcula las subredes en función de la IP base y la máscara proporcionada."""
+    try:
+        # Crear la red a partir de la IP base y la máscara
+        red = ipaddress.IPv4Network(f"{ip_base}/{mascara}", strict=False)
+        resultados = []
+
+        # Calcular el número de subredes posibles
+        num_subredes = 2 ** (32 - red.prefixlen)
+
+        # Generar las subredes
+        for i in range(num_subredes):
+            subred = next(red.subnets(new_prefix=red.prefixlen))
+            resultados.append({
+                "id": f"Subred {i+1}",
+                "mascara": str(subred.netmask),
+                "primera_ip": str(subred.network_address + 1),
+                "ultima_ip": str(subred.broadcast_address - 1),
+                "broadcast": str(subred.broadcast_address)
+            })
+            red = ipaddress.IPv4Network((int(subred.broadcast_address) + 1, red.prefixlen), strict=False)
+
+        return resultados
+    except ValueError as e:
+        print(f"Error al calcular subredes: {e}")
+        return []
+
+#Calcular Host validos por subred con Dirección IP y y 
+#mascara de red en formato decimal punteado (255.255.255.0) o como un prefijo de longitud (por ejemplo, /24).
+
+def calcular_host(ip_base, mascara):
+    """Calcula los hosts válidos en una subred dada la IP base y la máscara."""
+    try:
+        red = ipaddress.IPv4Network(f"{ip_base}/{mascara}", strict=False)
+        direccion_red = red.network_address
+        direccion_broadcast = red.broadcast_address
+        hosts_validos = list(red.hosts())
+        
+        return {
+            "direccion_red": str(direccion_red),
+            "direccion_broadcast": str(direccion_broadcast),
+            "hosts_validos": [str(host) for host in hosts_validos]
+        }
+    except ValueError as e:
+        print(f"Error al calcular hosts: {e}")
+        return {}
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     subredes = None
@@ -59,14 +109,18 @@ def index():
         ip_base = request.form.get("ip")
         hosts = request.form.get("hosts")
 
-        if hosts:  # Verifica si el campo hosts fue enviado
+        if hosts: 
             hosts = int(hosts)
             mascara_calculada = calcular_mascara(hosts)
-
+            
         conexiones = request.form.get("conexiones")
+        
         if conexiones:
             conexiones = [int(x) for x in conexiones.split(",")]
             subredes = calcular_subredes(ip_base, conexiones)
+            
+        if mascara:  # Verifica si el campo mascara fue enviado
+        subredes = calcular_subredes_conIPMascara(ip_base, mascara)
 
     return render_template("index.html", subredes=subredes, mascara_calculada=mascara_calculada)
 
