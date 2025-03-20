@@ -120,7 +120,7 @@ def index():
             subredes = calcular_subredes(ip_base, conexiones)
             
         if mascara:  # Verifica si el campo mascara fue enviado
-        subredes = calcular_subredes_conIPMascara(ip_base, mascara)
+            subredes = calcular_subredes_conIPMascara(ip_base, mascara)
 
     return render_template("index.html", subredes=subredes, mascara_calculada=mascara_calculada)
 
