@@ -1,6 +1,7 @@
 Objetivo: Cualquier persona con conocimientos mínimos (Casi nulos) debe ser capaz de entender como funciona
 
 Calculadora de redes
+Pongan el index dentro de una carpeta llamada templates (Esa carpeta tiene que estar dentro de la carpeta donde esta todo el proyecto)
 cd "Direccion donde estan los codigos"
 python Backend.py
 http://127.0.0.1:5000
@@ -13,6 +14,8 @@ Calcular Broadcast, primera dirección, ultima dirección, mascara de subred, ho
 
 Segundo Calculo
 Calcular mascara de subred minima con Dirección Ip y Hosts por subred
+
+Lider implemento que funcione con otras ip locales ademas de 127.0.0.1
 
 -Cosas a implementar: 
 
