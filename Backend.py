@@ -118,9 +118,12 @@ def index():
         if conexiones:
             conexiones = [int(x) for x in conexiones.split(",")]
             subredes = calcular_subredes(ip_base, conexiones)
-            
+
+        mascara = request.form.get("mascara")
+
         if mascara:  # Verifica si el campo mascara fue enviado
             subredes = calcular_subredes_conIPMascara(ip_base, mascara)
+
 
     return render_template("index.html", subredes=subredes, mascara_calculada=mascara_calculada)
 
