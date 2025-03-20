@@ -11,7 +11,8 @@
         <label>IP Base:</label>
         <input type="text" name="ip" required placeholder="Ej: 192.168.2.0">
         <br>
-        <label> Ordena de mayor a menor</label>
+        <label>Máscara de subred (Ej: 255.255.255.0 o /24):</label>
+        <input type="text" name="mascara" placeholder="Ej: 255.255.255.0 o /24">
         <br>
         <label>Conexiones necesarias (separadas por comas, opcional):</label>
         <input type="text" name="conexiones" placeholder="Ej: 3, 5, 20">
@@ -23,17 +24,15 @@
     </form>
 
     {% if mascara_calculada %}
-        <h3>Resultados:</h3>
-        <p>La máscara de subred mínima necesaria es: <strong>/{{ mascara_calculada }}</strong></p>
+        <h3>Máscara de subred mínima necesaria:</h3>
+        <p><strong>/{{ mascara_calculada }}</strong></p>
     {% endif %}
 
     {% if subredes %}
-        <h3>Resultados:</h3>
+        <h3>Subredes Calculadas:</h3>
         <table border="1">
             <tr>
                 <th>Identificador</th>
-                <th>Hosts Necesarios</th>
-                <th>Hosts Reales</th>
                 <th>Máscara de Subred</th>
                 <th>Primera IP</th>
                 <th>Última IP</th>
@@ -42,8 +41,6 @@
             {% for subred in subredes %}
             <tr>
                 <td>{{ subred.id }}</td>
-                <td>{{ subred.hosts_necesarios }}</td>
-                <td>{{ subred.hosts_reales }}</td>
                 <td>{{ subred.mascara }}</td>
                 <td>{{ subred.primera_ip }}</td>
                 <td>{{ subred.ultima_ip }}</td>
@@ -54,3 +51,4 @@
     {% endif %}
 </body>
 </html>
+
