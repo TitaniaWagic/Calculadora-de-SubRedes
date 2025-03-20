@@ -108,6 +108,7 @@ def index():
     if request.method == "POST":
         ip_base = request.form.get("ip")
         hosts = request.form.get("hosts")
+        mascara = request.form.get("mascara")
 
         if hosts: 
             hosts = int(hosts)
