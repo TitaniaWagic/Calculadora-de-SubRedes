@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Permissions-Policy" content="browsing-topics=()"> <!-- Cabecera actualizada -->
-    <title>Calculadora Avanzada de Subredes</title>
+    <title>Calculadora de Subredes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- Favicon vacío para evitar error 404 -->
@@ -91,7 +91,7 @@
                 {% if mascara_calculada %}
                     <div class="alert alert-info">
                         <h4>Máscara de subred mínima necesaria:</h4>
-                        <p class="mb-0"><strong>/{{ mascara_calculada }}</strong> ({{ ipaddress.IPv4Network('0.0.0.0/'+mascara_calculada|string).netmask }})</p>
+                        <p class="mb-0"><strong>/{{ mascara_calculada }}</strong> ({{ netmask }})</p>
                     </div>
                 {% endif %}
                 
@@ -113,11 +113,7 @@
                                 {% for subred in subredes %}
                                 <tr>
                                     <td>{{ subred.id }}</td>
-                                    <td>{{ subred.mascara }} (/{{
-                                        ipaddress.IPv4Network('0.0.0.0/'+subred.mascara).prefixlen
-                                        if '.' in subred.mascara
-                                        else subred.mascara.split('/')[-1]
-                                    }})</td>
+                                    <td>{{ subred.mascara }} (/{{ subred.prefixlen }})</td>
                                     <td>{{ subred.primera_ip }}</td>
                                     <td>{{ subred.ultima_ip }}</td>
                                     <td>{{ subred.broadcast }}</td>
@@ -195,33 +191,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Validación de formularios
-        document.addEventListener('DOMContentLoaded', function() {
-            // Validación para IPs
-            const ipInputs = document.querySelectorAll('input[type="text"][name*="ip"]');
-            ipInputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^0-9.]/g, '');
-                });
-            });
-            
-            // Validación para máscaras
-            const maskInputs = document.querySelectorAll('input[name*="mascara"]');
-            maskInputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^0-9./]/g, '');
-                });
-            });
-            
-            // Validación para conexiones
-            const conexionesInput = document.getElementById('conexiones');
-            if(conexionesInput) {
-                conexionesInput.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^0-9,]/g, '');
-                });
-            }
-        });
-    </script>
+    <script> src="javascript.js"</script>
 </body>
 </html>
