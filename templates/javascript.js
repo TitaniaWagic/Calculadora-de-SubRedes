@@ -1,29 +1,26 @@
-// Inicializar tooltips
-var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
-var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl);
-});
-        
-// Validación básica del formulario
-document.getElementById('subnetForm').addEventListener('submit', function(e) {
-    const ip = document.getElementById('ip').value;
-    if (!/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(ip)) {
-        alert('Por favor ingrese una dirección IP válida');
-        e.preventDefault();
-    }
-});
-        
-// Cambiar entre formularios según la pestaña activa
-document.getElementById('hosts-tab').addEventListener('click', function() {
-    document.getElementById('host_ip').setAttribute('name', 'ip');
-    document.getElementById('host_mascara').setAttribute('name', 'mascara');
-    document.getElementById('conexiones').removeAttribute('name');
-    document.getElementById('hosts').removeAttribute('name');
-});
-        
-document.getElementById('subnet-tab').addEventListener('click', function() {
-    document.getElementById('host_ip').removeAttribute('name');
-    document.getElementById('host_mascara').removeAttribute('name');
-    document.getElementById('conexiones').setAttribute('name', 'conexiones');
-    document.getElementById('hosts').setAttribute('name', 'hosts');
-});
+// Validación de formularios
+        document.addEventListener('DOMContentLoaded', function() {
+            // Validación para IPs
+            const ipInputs = document.querySelectorAll('input[type="text"][name*="ip"]');
+            ipInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                });
+            });
+            
+            // Validación para máscaras
+            const maskInputs = document.querySelectorAll('input[name*="mascara"]');
+            maskInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9./]/g, '');
+                });
+            });
+            
+            // Validación para conexiones
+            const conexionesInput = document.getElementById('conexiones');
+            if(conexionesInput) {
+                conexionesInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9,]/g, '');
+                });
+            }
+        });
