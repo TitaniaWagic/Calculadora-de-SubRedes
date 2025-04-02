@@ -1,0 +1,31 @@
+body {
+    background-color: #f8f9fa;
+    padding-top: 2rem;
+}
+.calculator-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+.result-section {
+    margin-top: 2rem;
+}
+.tab-content {
+    padding: 1rem 0;
+}
+.nav-tabs .nav-link.active {
+    font-weight: bold;
+}
+.info-icon {
+    cursor: pointer;
+    color: #6c757d;
+}
+.tooltip-inner {
+    max-width: 300px;
+}
+.hosts-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
