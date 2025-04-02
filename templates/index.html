@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Permissions-Policy" content="browsing-topics=()"> <!-- Cabecera actualizada -->
     <title>Calculadora Avanzada de Subredes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- Favicon vacío para evitar error 404 -->
 </head>
 <body>
     <div class="container">
@@ -27,14 +29,17 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="ip" class="form-label">Dirección IP Base</label>
-                                <input type="text" class="form-control" id="ip" name="ip" required placeholder="Ej: 192.168.1.0">
-                                <div class="form-text">Ingrese la dirección IP de red (ej. 192.168.1.0)</div>
+                                <input type="text" class="form-control" id="ip" name="ip" required 
+                                       placeholder="Ej: 192.168.1.0" pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+                                <div class="invalid-feedback">Por favor ingrese una dirección IP válida</div>
                             </div>
                             <div class="col-md-6">
                                 <label for="mascara" class="form-label">Máscara de Subred</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="mascara" name="mascara" placeholder="Ej: 255.255.255.0 o /24">
-                                    <span class="input-group-text info-icon" title="Puede usar formato decimal (255.255.255.0) o prefijo (/24)">ℹ️</span>
+                                    <input type="text" class="form-control" id="mascara" name="mascara" 
+                                           placeholder="Ej: 255.255.255.0 o /24" 
+                                           pattern="^(/?\d{1,2}|(255\.){3}255|((255\.){0,3}255|0\.){3}0)$">
+                                    <span class="input-group-text info-icon" title="Formatos aceptados: 255.255.255.0 o /24">ℹ️</span>
                                 </div>
                             </div>
                         </div>
@@ -42,13 +47,14 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="conexiones" class="form-label">Hosts por Subred</label>
-                                <input type="text" class="form-control" id="conexiones" name="conexiones" placeholder="Ej: 10, 20, 50">
-                                <div class="form-text">Ingrese la cantidad de hosts necesarios por subred, separados por comas</div>
+                                <input type="text" class="form-control" id="conexiones" name="conexiones" 
+                                       placeholder="Ej: 10, 20, 50" pattern="^\d+(,\s*\d+)*$">
+                                <div class="form-text">Ingrese números separados por comas (ej: 5, 10, 30)</div>
                             </div>
                             <div class="col-md-6">
                                 <label for="hosts" class="form-label">Hosts Totales</label>
-                                <input type="number" class="form-control" id="hosts" name="hosts" placeholder="Ej: 100">
-                                <div class="form-text">O ingrese el total de hosts necesarios para calcular la máscara mínima</div>
+                                <input type="number" class="form-control" id="hosts" name="hosts" 
+                                       placeholder="Ej: 100" min="1">
                             </div>
                         </div>
                         
@@ -63,11 +69,15 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="host_ip" class="form-label">Dirección IP de Red</label>
-                                <input type="text" class="form-control" id="host_ip" name="host_ip" placeholder="Ej: 192.168.1.0">
+                                <input type="text" class="form-control" id="host_ip" name="host_ip" 
+                                       placeholder="Ej: 192.168.1.0" required
+                                       pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
                             </div>
                             <div class="col-md-6">
                                 <label for="host_mascara" class="form-label">Máscara de Subred</label>
-                                <input type="text" class="form-control" id="host_mascara" name="host_mascara" placeholder="Ej: 255.255.255.0 o /24">
+                                <input type="text" class="form-control" id="host_mascara" name="host_mascara" 
+                                       placeholder="Ej: 255.255.255.0 o /24" required
+                                       pattern="^(/?\d{1,2}|(255\.){3}255|((255\.){0,3}255|0\.){3}0)$">
                             </div>
                         </div>
                         <div class="d-grid gap-2">
@@ -134,6 +144,9 @@
                                     <div class="col-md-3 col-sm-4 col-6">
                                         {{ host }}
                                     </div>
+                                    {% if loop.index % 4 == 0 %}
+                                        </div><div class="row">
+                                    {% endif %}
                                     {% endfor %}
                                 </div>
                             </div>
@@ -182,6 +195,33 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="javascript.js"></script>
+    <script>
+        // Validación de formularios
+        document.addEventListener('DOMContentLoaded', function() {
+            // Validación para IPs
+            const ipInputs = document.querySelectorAll('input[type="text"][name*="ip"]');
+            ipInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                });
+            });
+            
+            // Validación para máscaras
+            const maskInputs = document.querySelectorAll('input[name*="mascara"]');
+            maskInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9./]/g, '');
+                });
+            });
+            
+            // Validación para conexiones
+            const conexionesInput = document.getElementById('conexiones');
+            if(conexionesInput) {
+                conexionesInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9,]/g, '');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
