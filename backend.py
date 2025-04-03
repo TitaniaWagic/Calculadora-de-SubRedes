@@ -112,6 +112,7 @@ def calcular_host(ip_base, mascara):
 @app.route("/", methods=["GET", "POST"])
 def index():
     subredes = None
+    total_subredes= None
     mascara_calculada = None
     hosts_info = None
     netmask = None
@@ -133,10 +134,10 @@ def index():
                     if mascara_calculada:
                         netmask = str(ipaddress.IPv4Network(f'0.0.0.0/{mascara_calculada}').netmask)
 
-                if conexiones:
-                    conexiones_lista = [c.strip() for c in conexiones.split(",") if c.strip().isdigit()]
-                    if conexiones_lista:
-                        subredes = calcular_subredes(ip_base, conexiones_lista)
+                if conexiones_lista:
+                    resultado_calculo = calcular_subredes(ip_base, conexiones_lista)
+                    subredes = resultado_calculo["subredes"]
+                    total_subredes = resultado_calculo["total_subredes"]
 
                 if mascara:
                     if '/' in mascara or all(0 <= int(octeto) <= 255 for octeto in mascara.split('.') if octeto.isdigit()):
@@ -152,6 +153,7 @@ def index():
     return render_template(
         "index.html",
         subredes=subredes,
+        total_subredes=total_subredes,  # Nueva variable
         mascara_calculada=mascara_calculada,
         netmask=netmask,
         hosts_info=hosts_info,
