@@ -76,18 +76,21 @@ def calcular_subredes(ip_base, conexiones):
         return {"subredes": [], "total_subredes": 0}
         
 def calcular_host(ip_base, mascara):
-    """Calcula los hosts válidos en una subred dada la IP base y la máscara."""
-    try:
-        red = ipaddress.IPv4Network(f"{ip_base}/{mascara}", strict=False)
-        return {
-            "direccion_red": str(red.network_address),
-            "direccion_broadcast": str(red.broadcast_address),
-            "hosts_validos": [str(host) for host in red.hosts()],
-            "total_hosts": len(list(red.hosts()))
-        }
-    except (ValueError, ipaddress.AddressValueError, ipaddress.NetmaskValueError) as e:
-        print(f"Error al calcular hosts: {e}")
-        return {}
+    from ipaddress import ip_network
+
+    # Crear red a partir de IP base y máscara
+    red = ip_network(f"{ip_base}/{mascara}", strict=False)
+
+    # Hosts disponibles (total - 2 por red y broadcast)
+    hosts_disponibles = red.num_addresses - 2
+
+    return {
+        "direccion_red": str(red.network_address),
+        "direccion_broadcast": str(red.broadcast_address),
+        "hosts_disponibles": hosts_disponibles,
+        "hosts_validos": [str(ip) for ip in red.hosts()]
+    }
+
 
 def calcular_subredes_conIPMascara(ip_base, mascara):
     """Calcula las subredes en función de la IP base y la máscara proporcionada."""
