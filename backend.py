@@ -36,7 +36,8 @@ def calcular_subredes(ip_base, conexiones):
         if not clase:
             return {"subredes": [], "total_subredes": 0}
         
-        conexiones_validas = [int(c) for c in conexiones if c.strip().isdigit()]
+        # Convertimos conexiones a strings antes de validarlas
+        conexiones_validas = [int(str(c).strip()) for c in conexiones if str(c).strip().isdigit()]
         if not conexiones_validas:
             return {"subredes": [], "total_subredes": 0}
 
@@ -73,6 +74,7 @@ def calcular_subredes(ip_base, conexiones):
     except (ValueError, ipaddress.AddressValueError, ipaddress.NetmaskValueError) as e:
         print(f"Error al calcular subredes: {e}")
         return {"subredes": [], "total_subredes": 0}
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
