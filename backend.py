@@ -36,6 +36,7 @@ def calcular_subredes(ip_base, conexiones):
         
         subred_actual = ipaddress.IPv4Network(f"{ip_base}/{mascara_base}", strict=False)
         resultados = []
+        total_subredes = len(conexiones)  # Calculamos el total de subredes
         
         for i, hosts_necesarios in enumerate(sorted(map(int, conexiones), reverse=True)):
             nueva_mascara = calcular_mascara(hosts_necesarios)
@@ -46,6 +47,7 @@ def calcular_subredes(ip_base, conexiones):
             
             resultados.append({
                 "id": f"Red {i+1}",
+                "direccion_subred": str(subred.network_address),  # Nueva línea
                 "hosts_necesarios": hosts_necesarios,
                 "hosts_reales": (2 ** (32 - nueva_mascara)) - 2,
                 "mascara": str(subred.netmask),
@@ -57,10 +59,14 @@ def calcular_subredes(ip_base, conexiones):
             
             subred_actual = ipaddress.IPv4Network((int(subred.broadcast_address) + 1, nueva_mascara), strict=False)
         
-        return resultados
+        # Devolvemos tanto los resultados como el total de subredes
+        return {
+            "subredes": resultados,
+            "total_subredes": total_subredes
+        }
     except (ValueError, ipaddress.AddressValueError, ipaddress.NetmaskValueError) as e:
         print(f"Error al calcular subredes: {e}")
-        return []
+        return {"subredes": [], "total_subredes": 0}
 
 def calcular_subredes_conIPMascara(ip_base, mascara):
     """Calcula las subredes en función de la IP base y la máscara proporcionada."""
