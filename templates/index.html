@@ -88,20 +88,27 @@
             </div>
             
             <div class="result-section">
+                
                 {% if mascara_calculada %}
                     <div class="alert alert-info">
                         <h4>Máscara de subred mínima necesaria:</h4>
                         <p class="mb-0"><strong>/{{ mascara_calculada }}</strong> ({{ netmask }})</p>
                     </div>
                 {% endif %}
-                
+            
                 {% if subredes %}
+                    <div class="alert alert-success mb-3">
+                        <h4>Resumen de Subredes</h4>
+                        <p class="mb-0">Total de subredes creadas: <strong>{{ subredes|length }}</strong></p>
+                    </div>
+            
                     <h3 class="mb-3">Subredes Calculadas</h3>
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
                             <thead class="table-dark">
                                 <tr>
                                     <th>Subred</th>
+                                    <th>Dirección de Subred</th>
                                     <th>Máscara</th>
                                     <th>Primera IP</th>
                                     <th>Última IP</th>
@@ -113,6 +120,7 @@
                                 {% for subred in subredes %}
                                 <tr>
                                     <td>{{ subred.id }}</td>
+                                    <td>{{ subred.network_address }}</td>
                                     <td>{{ subred.mascara }} (/{{ subred.prefixlen }})</td>
                                     <td>{{ subred.primera_ip }}</td>
                                     <td>{{ subred.ultima_ip }}</td>
@@ -124,7 +132,7 @@
                         </table>
                     </div>
                 {% endif %}
-                
+                      
                 {% if hosts_info %}
                     <h3 class="mb-3">Hosts Válidos</h3>
                     <div class="card">
@@ -191,6 +199,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script> src="javascript.js"</script>
+    <script src="javascript.js"</script>
 </body>
 </html>
