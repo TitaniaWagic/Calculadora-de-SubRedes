@@ -146,9 +146,15 @@ def index():
             else:
                 # Cálculo por hosts necesarios
                 if hosts and hosts.isdigit():
-                    data["mascara_calculada"] = calcular_mascara(hosts)
+                    hosts_requeridos = int(hosts)
+                    data["mascara_calculada"] = calcular_mascara(hosts_requeridos)
+                    
                     if data["mascara_calculada"]:
-                        data["netmask"] = str(ipaddress.IPv4Network(f'0.0.0.0/{data["mascara_calculada"]}').netmask)
+                        netmask_calculada = ipaddress.IPv4Network(f'0.0.0.0/{data["mascara_calculada"]}').netmask
+                        data["netmask"] = str(netmask_calculada)
+                    else:
+                        data["error"] = "Número de hosts demasiado grande para una subred válida"
+
 
                 # Cálculo por conexiones
                 if conexiones:
@@ -162,10 +168,11 @@ def index():
                 if mascara:
                     try:
                         red = ipaddress.IPv4Network(f"{ip_base}/{mascara}", strict=False)
-                        data["subredes"] = calcular_subredes(ip_base, [red.num_addresses - 2])["subredes"]
+                        data["subredes"] = calcular_subredes_conIPMascara(ip_base, mascara)
                         data["hosts_info"] = calcular_host(ip_base, mascara)
                     except ValueError:
                         data["error"] = "Formato de máscara no válido"
+
 
         except Exception as e:
             data["error"] = f"Error en el procesamiento: {str(e)}"
