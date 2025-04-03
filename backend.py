@@ -89,6 +89,33 @@ def calcular_host(ip_base, mascara):
         print(f"Error al calcular hosts: {e}")
         return {}
 
+def calcular_subredes_conIPMascara(ip_base, mascara):
+    """Calcula las subredes en función de la IP base y la máscara proporcionada."""
+    try:
+        red = ipaddress.IPv4Network(f"{ip_base}/{mascara}", strict=False)
+        resultados = []
+        prefixlen = red.prefixlen
+
+        for i in range(2 ** (32 - prefixlen)):
+            subred = next(red.subnets(new_prefix=prefixlen))
+            
+            resultados.append({
+                "id": f"Subred {i+1}",
+                "mascara": str(subred.netmask),
+                "prefixlen": prefixlen,
+                "primera_ip": str(subred.network_address + 1),
+                "ultima_ip": str(subred.broadcast_address - 1),
+                "broadcast": str(subred.broadcast_address),
+                "hosts_reales": (2 ** (32 - prefixlen)) - 2
+            })
+            
+            red = ipaddress.IPv4Network((int(subred.broadcast_address) + 1, prefixlen), strict=False)
+
+        return resultados
+    except (ValueError, ipaddress.AddressValueError, ipaddress.NetmaskValueError) as e:
+        print(f"Error al calcular subredes con IP/Máscara: {e}")
+        return []
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     data = {
