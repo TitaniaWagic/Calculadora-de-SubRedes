@@ -55,7 +55,7 @@ def calcular_subredes(ip_base, conexiones):
                     "id": f"Red {i}",
                     "direccion_subred": str(subred.network_address),
                     "hosts_necesarios": hosts_necesarios,
-                    "hosts_reales": (2 ** (32 - nueva_mascara)) - 2,
+                    "hosts_reales": max(0, (2 ** (32 - prefixlen)) - 2),
                     "mascara": str(subred.netmask),
                     "prefixlen": nueva_mascara,
                     "primera_ip": str(subred.network_address + 1),
