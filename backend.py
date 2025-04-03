@@ -74,7 +74,20 @@ def calcular_subredes(ip_base, conexiones):
     except (ValueError, ipaddress.AddressValueError, ipaddress.NetmaskValueError) as e:
         print(f"Error al calcular subredes: {e}")
         return {"subredes": [], "total_subredes": 0}
-
+        
+def calcular_host(ip_base, mascara):
+    """Calcula los hosts válidos en una subred dada la IP base y la máscara."""
+    try:
+        red = ipaddress.IPv4Network(f"{ip_base}/{mascara}", strict=False)
+        return {
+            "direccion_red": str(red.network_address),
+            "direccion_broadcast": str(red.broadcast_address),
+            "hosts_validos": [str(host) for host in red.hosts()],
+            "total_hosts": len(list(red.hosts()))
+        }
+    except (ValueError, ipaddress.AddressValueError, ipaddress.NetmaskValueError) as e:
+        print(f"Error al calcular hosts: {e}")
+        return {}
 
 @app.route("/", methods=["GET", "POST"])
 def index():
