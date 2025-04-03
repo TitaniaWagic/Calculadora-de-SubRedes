@@ -36,9 +36,9 @@
                             <div class="col-md-6">
                                 <label for="mascara" class="form-label">Máscara de Subred</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="mascara" name="mascara" 
-                                           placeholder="Ej: 255.255.255.0 o /24" 
-                                           pattern="^(/?\d{1,2}|(255\.){3}255|((255\.){0,3}255|0\.){3}0)$">
+                                    <input type="text" class="form-control" id="mascara" name="mascara"
+                                        placeholder="Ej: 255.255.255.0 o /24"
+                                        pattern="^(?:\/?\d{1,2}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))$">
                                     <span class="input-group-text info-icon" title="Formatos aceptados: 255.255.255.0 o /24">ℹ️</span>
                                 </div>
                             </div>
@@ -48,8 +48,8 @@
                             <div class="col-md-6">
                                 <label for="conexiones" class="form-label">Hosts por Subred</label>
                                 <input type="text" class="form-control" id="conexiones" name="conexiones" 
-                                       placeholder="Ej: 50, 20, 10" pattern="^\d+(,\s*\d+)*$">
-                                <div class="form-text">Ingrese números separados por comas, de mayor a menor (ej: 30, 10, 5)</div>
+                                       placeholder="Ej: 10, 20, 50" pattern="^\d+(,\s*\d+)*$">
+                                <div class="form-text">Ingrese números separados por comas (ej: 5, 10, 30)</div>
                             </div>
                             <div class="col-md-6">
                                 <label for="hosts" class="form-label">Hosts Totales</label>
