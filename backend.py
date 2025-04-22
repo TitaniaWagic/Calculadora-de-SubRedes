@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import ipaddress
 import math
 
@@ -18,6 +18,11 @@ def obtener_clase(ip):
     except (ValueError, IndexError, AttributeError):
         return None, None
 
+
+
+
+
+
 def calcular_mascara(hosts_necesarios):
     """Calcula la máscara de subred mínima para soportar la cantidad de hosts necesarios."""
     try:
@@ -28,6 +33,13 @@ def calcular_mascara(hosts_necesarios):
         return 32 - n if (32 - n) >= 0 else None
     except (ValueError, TypeError):
         return None
+
+
+
+
+
+
+
 
 def calcular_subredes(ip_base, conexiones):
     """Calcula las subredes en función de la IP base y conexiones necesarias."""
@@ -50,16 +62,59 @@ def calcular_subredes(ip_base, conexiones):
                 
             try:
                 subred = next(subred_actual.subnets(new_prefix=nueva_mascara))
+
+                # Convertir a diferentes formatos
+                ip_decimal = str(subred.network_address)
+                mask_decimal = str(subred.netmask)
+                
+                # Formato binario con separación de octetos
+                ip_bin = '.'.join([f'{int(octeto):08b}' for octeto in ip_decimal.split('.')])
+                mask_bin = '.'.join([f'{int(octeto):08b}' for octeto in mask_decimal.split('.')])
+                
+                # Formato hexadecimal con separación de octetos
+                ip_hex = '.'.join([f'{int(octeto):02x}' for octeto in ip_decimal.split('.')])
+                mask_hex = '.'.join([f'{int(octeto):02x}' for octeto in mask_decimal.split('.')])
+
                 resultados.append({
                     "id": f"Red {i}",
-                    "direccion_subred": str(subred.network_address),
+                    "direccion_subred": ip_decimal,
+                    "direccion_subred_bin": ip_bin,
+                    "mascara": mask_decimal,
+                    "mascara_bin": mask_bin,
+                    "mascara_hex": mask_hex,
                     "hosts_necesarios": hosts_necesarios,
-                    "hosts_reales": max(0, (2 ** (32 - nueva_mascara)) - 2),  # Corregido: usar nueva_mascara
-                    "mascara": str(subred.netmask),
+                    "hosts_reales": max(0, (2 ** (32 - nueva_mascara)) - 2),
                     "prefixlen": nueva_mascara,
                     "primera_ip": str(subred.network_address + 1),
+                    "primera_ip_bin": '.'.join([f'{int(octeto):08b}' for octeto in str(subred.network_address + 1).split('.')]),
                     "ultima_ip": str(subred.broadcast_address - 1),
-                    "broadcast": str(subred.broadcast_address)
+                    "ultima_ip_bin": '.'.join([f'{int(octeto):08b}' for octeto in str(subred.broadcast_address - 1).split('.')]),
+                    "broadcast": str(subred.broadcast_address),
+                    "broadcast_bin": '.'.join([f'{int(octeto):08b}' for octeto in str(subred.broadcast_address).split('.')]),
+                    "formats": {
+                        "decimal": {
+                            "red": ip_decimal,
+                            "mascara": mask_decimal,
+                            "primera_ip": str(subred.network_address + 1),
+                            "ultima_ip": str(subred.broadcast_address - 1),
+                            "broadcast": str(subred.broadcast_address)
+                        },
+                        "binario": {
+                            "red": ip_bin,
+                            "mascara": mask_bin,
+                            "primera_ip": '.'.join([f'{int(octeto):08b}' for octeto in str(subred.network_address + 1).split('.')]),
+                            "ultima_ip": '.'.join([f'{int(octeto):08b}' for octeto in str(subred.broadcast_address - 1).split('.')]),
+                            "broadcast": '.'.join([f'{int(octeto):08b}' for octeto in str(subred.broadcast_address).split('.')])
+                        },
+                        "hexadecimal": {
+                            "red": ip_hex,
+                            "mascara": mask_hex,
+                            "primera_ip": '.'.join([f'{int(octeto):02x}' for octeto in str(subred.network_address + 1).split('.')]),
+                            "ultima_ip": '.'.join([f'{int(octeto):02x}' for octeto in str(subred.broadcast_address - 1).split('.')]),
+                            "broadcast": '.'.join([f'{int(octeto):02x}' for octeto in str(subred.broadcast_address).split('.')])
+                        },
+                        "cidr": f"{ip_decimal}/{nueva_mascara}"
+                    }
                 })
                 subred_actual = ipaddress.IPv4Network((int(subred.broadcast_address) + 1, nueva_mascara), strict=False)
             except ValueError as e:
@@ -68,11 +123,19 @@ def calcular_subredes(ip_base, conexiones):
         
         return {
             "subredes": resultados,
-            "total_subredes": len(resultados)
+            "total_subredes": len(resultados),
+            "clase_red": clase,
+            "mascara_base": mascara_base
         }
     except (ValueError, ipaddress.AddressValueError, ipaddress.NetmaskValueError) as e:
         print(f"Error al calcular subredes: {e}")
-        return {"subredes": [], "total_subredes": 0}
+        return {"subredes": [], "total_subredes": 0, "error": str(e)}
+
+
+
+
+
+
 
 def calcular_host(ip_base, mascara):
     """Calcula los hosts válidos en una subred dada la IP base y la máscara."""
@@ -87,6 +150,12 @@ def calcular_host(ip_base, mascara):
     except (ValueError, ipaddress.AddressValueError, ipaddress.NetmaskValueError) as e:
         print(f"Error al calcular hosts: {e}")
         return {}
+
+
+
+
+
+
 
 def calcular_subredes_conIPMascara(ip_base, mascara):
     """Calcula las subredes en función de la IP base y la máscara proporcionada."""
@@ -114,6 +183,30 @@ def calcular_subredes_conIPMascara(ip_base, mascara):
     except (ValueError, ipaddress.AddressValueError, ipaddress.NetmaskValueError) as e:
         print(f"Error al calcular subredes con IP/Máscara: {e}")
         return []
+
+
+
+@app.route('/convertir', methods=['POST'])
+def convertir_formato():
+    data = request.get_json()
+    ip = data.get('ip')
+    formato = data.get('formato')
+    
+    try:
+        octetos = ip.split('.')
+        if formato == 'binario':
+            converted = '.'.join([f'{int(octeto):08b}' for octeto in octetos])
+        elif formato == 'hexadecimal':
+            converted = '.'.join([f'{int(octeto):02x}' for octeto in octetos])
+        elif formato == 'decimal':
+            converted = ip
+        else:
+            converted = ip
+            
+        return jsonify({"status": "success", "converted": converted})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
