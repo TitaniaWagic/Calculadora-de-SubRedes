@@ -39,11 +39,11 @@ def calcular_subredes(ip_base, conexiones):
     try:
         clase, mascara_base = obtener_clase(ip_base)
         if not clase:
-            return {"subredes": [], "total_subredes": 0}
+            return {"subredes": [], "total_subredes": 0, "total_hosts_posibles": 0}
         
         conexiones_validas = [int(str(c).strip()) for c in conexiones if str(c).strip().isdigit()]
         if not conexiones_validas:
-            return {"subredes": [], "total_subredes": 0}
+            return {"subredes": [], "total_subredes": 0, "total_hosts_posibles": 0}
 
         subred_actual = ipaddress.IPv4Network(f"{ip_base}/{mascara_base}", strict=False)
         resultados = []
@@ -55,13 +55,13 @@ def calcular_subredes(ip_base, conexiones):
                 
             try:
                 subred = next(subred_actual.subnets(new_prefix=nueva_mascara))
-                total_hosts_posibles = 2 ** (32 - nueva_mascara)  # <- Añade esto
+                total_hosts_posibles = 2 ** (32 - nueva_mascara)
                 resultados.append({
                     "id": f"Red {i}",
                     "direccion_subred": str(subred.network_address),
                     "hosts_necesarios": hosts_necesarios,
                     "hosts_reales": max(0, (2 ** (32 - nueva_mascara)) - 2),
-                    "hosts_posibles": total_hosts_posibles,  # <- Nuevo campo
+                    "hosts_posibles": total_hosts_posibles,
                     "mascara": str(subred.netmask),
                     "prefixlen": nueva_mascara,
                     "primera_ip": str(subred.network_address + 1),
@@ -73,13 +73,17 @@ def calcular_subredes(ip_base, conexiones):
                 print(f"Error creando subred {i}: {e}")
                 continue
         
+        # Calcula el total de hosts posibles después de crear todas las subredes
+        total_hosts_posibles = sum(subred["hosts_posibles"] for subred in resultados)
+        
         return {
             "subredes": resultados,
-            "total_subredes": len(resultados)
+            "total_subredes": len(resultados),
+            "total_hosts_posibles": total_hosts_posibles
         }
     except (ValueError, ipaddress.AddressValueError, ipaddress.NetmaskValueError) as e:
         print(f"Error al calcular subredes: {e}")
-        return {"subredes": [], "total_subredes": 0}
+        return {"subredes": [], "total_subredes": 0, "total_hosts_posibles": 0}
 
 
 
@@ -173,6 +177,7 @@ def index():
                         resultado = calcular_subredes(ip_base, conexiones_lista)
                         data["subredes"] = resultado["subredes"]
                         data["total_subredes"] = resultado["total_subredes"]
+                        data["total_hosts_posibles"] = resultado.get("total_hosts_posibles")
 
                 # Cálculo por IP/Máscara
                 if mascara:

@@ -7,12 +7,22 @@
     <title>Calculadora de Subredes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <!-- NUEVO: Favicon personalizado -->
+    <link rel="icon" href="https://i.ibb.co/VpvXnFGc/Screenshot-2025-04-23-162353.png" type="image/png">
 </head>
 <body>
+    <!-- NUEVO: Header con logo -->
+    <div class="header-content text-center py-4">
+        <div class="logo-container mb-3">
+            <img src="https://i.ibb.co/1GjBcpVG/Chat-GPT-Image-23-abr-2025-10-16-33.png" class="logo" style="max-height: 300px;">
+        </div>
+        <h1>Calculadora Avanzada de Subredes</h1>
+        <!-- NUEVO: Subtítulo descriptivo -->
+        <p class="text-muted mb-4">Herramienta profesional para cálculos de subredes IPv4</p>
+    </div>
+
     <div class="container">
         <div class="calculator-container">
-            <h1 class="text-center mb-4">Calculadora Avanzada de Subredes</h1>
             
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -104,8 +114,16 @@
                 {% if subredes %}
                     <div class="alert alert-success mb-3">
                         <h4>Resumen de Subredes</h4>
-                        <p class="mb-0">Total de subredes creadas: <strong>{{ hosts_info.total_hosts_posibles }}</strong></p>
+                        {% if hosts_info %}
+                            <!-- Cuando se calcula hosts válidos (otros cálculos) -->
+                            <p class="mb-0">Total de hosts posibles: <strong>{{ hosts_info.total_hosts_posibles }}</strong></p>
+                        {% else %}
+                            <!-- Cuando se calculan las conexiones -->
+                            <p class="mb-0">Total de subredes creadas: <strong>{{ total_subredes }}</strong></p>
+                        {% endif %}
                     </div>
+
+
             
                     
 
@@ -157,16 +175,14 @@
                     <h3 class="mb-3">Hosts Válidos</h3>
                     <div class="card">
                         <div class="card-body">
-                            <p><strong>Dirección de Red:</strong> 
+                            <p><strong>Dirección de Red:</strong>
                                 <span class="font-monospace" id="network-addr">{{ hosts_info.direccion_red }}</span>
                             </p>
-                            <p><strong>Dirección de Broadcast:</strong> 
+                            <p><strong>Dirección de Broadcast:</strong>
                                 <span class="font-monospace" id="broadcast-addr">{{ hosts_info.direccion_broadcast }}</span>
                             </p>
                             <p><strong>Total de Hosts Válidos:</strong> {{ hosts_info.total_hosts_validos }}</p>
                             <p><strong>Total de Hosts (incluyendo red y broadcast):</strong> {{ hosts_info.total_hosts_posibles }}</p>
-
-                            
                             <h5 class="mt-3">Lista de Hosts:</h5>
                             <div class="hosts-list">
                                 <div class="row">
