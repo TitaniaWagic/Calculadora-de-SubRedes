@@ -19,6 +19,8 @@ def obtener_clase(ip):
     except (ValueError, IndexError, AttributeError):
         return None, None
 
+
+
 def calcular_mascara(hosts_necesarios):
     """Calcula la máscara de subred mínima para soportar la cantidad de hosts necesarios."""
     try:
@@ -139,6 +141,7 @@ def calcular_subredes_conIPMascara(ip_base, mascara):
 
 
 
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     data = {
@@ -149,14 +152,12 @@ def index():
         "hosts_info": None,
         "error": None
     }
-
     if request.method == "POST":
         try:
             ip_base = request.form.get("ip", "").strip()
             conexiones = request.form.get("conexiones", "").strip()
             mascara = request.form.get("mascara", "").strip()
             hosts = request.form.get("hosts", "").strip()
-
             # Validación de IP
             try:
                 if ip_base:
@@ -164,6 +165,16 @@ def index():
             except ValueError:
                 data["error"] = "Dirección IP no válida"
             else:
+
+                if mascara and not ip_base:
+                    ip_base = "192.168.0.0"  # IP por defecto
+                    try:
+                        red = ipaddress.IPv4Network(f"{ip_base}/{mascara}", strict=False)
+                        data["subredes"] = calcular_subredes_conIPMascara(ip_base, mascara)
+                        data["hosts_info"] = calcular_host(ip_base, mascara)
+                    except ValueError:
+                        data["error"] = "Formato de máscara no válido"
+                        
                 # Cálculo por hosts necesarios
                 if hosts and hosts.isdigit():
                     data["mascara_calculada"] = calcular_mascara(hosts)
@@ -178,7 +189,6 @@ def index():
                         data["subredes"] = resultado["subredes"]
                         data["total_subredes"] = resultado["total_subredes"]
                         data["total_hosts_posibles"] = resultado.get("total_hosts_posibles")
-
                 # Cálculo por IP/Máscara
                 if mascara:
                     try:
@@ -193,7 +203,6 @@ def index():
             print(data["error"])
 
     return render_template("index.html", **data)
-
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
