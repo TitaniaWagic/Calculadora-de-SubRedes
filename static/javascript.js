@@ -1,25 +1,20 @@
 document.addEventListener('DOMContentLoaded', function() {
     // =============================================
-    // 1. Selector de Formatos (Nueva funcionalidad)
+    // 1. Selector de Formatos (Modificado para nueva estructura)
     // =============================================
     const formatButtons = document.querySelectorAll('.format-btn');
     
     formatButtons.forEach(button => {
         button.addEventListener('click', function() {
-            // Remover clase 'active' de todos los botones
             formatButtons.forEach(btn => btn.classList.remove('active'));
-            // Añadir clase 'active' al botón clickeado
             this.classList.add('active');
             const selectedFormat = this.dataset.format;
-            
-            // Actualizar toda la interfaz con el formato seleccionado
             updateDisplayFormat(selectedFormat);
         });
     });
 
-    // Función para cambiar el formato de visualización
     function updateDisplayFormat(format) {
-        // 1. Actualizar direcciones en la tabla de subredes
+        // Actualizar direcciones en la tabla de subredes (si existe)
         document.querySelectorAll('[data-ip]').forEach(element => {
             const ipData = JSON.parse(element.dataset.ip);
             element.textContent = ipData[format]?.red || ipData.decimal.red;
@@ -47,15 +42,15 @@ document.addEventListener('DOMContentLoaded', function() {
             element.textContent = broadcastData[format]?.broadcast || broadcastData.decimal.broadcast;
         });
 
-        // 2. Actualizar hosts válidos
-        document.querySelectorAll('.host-ip').forEach(element => {
-            const originalIP = element.dataset.ip;
+        // Actualizar hosts válidos (nuevo selector para la estructura modificada)
+        document.querySelectorAll('.host-badge').forEach(element => {
+            const originalIP = element.textContent;
             element.textContent = convertIPFormat(originalIP, format);
         });
 
-        // 3. Actualizar direcciones de red y broadcast
-        const networkAddr = document.getElementById('network-addr');
-        const broadcastAddr = document.getElementById('broadcast-addr');
+        // Actualizar direcciones de red y broadcast (nuevos selectores)
+        const networkAddr = document.querySelector('.network-info [class*="font-monospace"]:first-child');
+        const broadcastAddr = document.querySelector('.network-info [class*="font-monospace"]:last-child');
         
         if (networkAddr && broadcastAddr) {
             networkAddr.textContent = convertIPFormat(networkAddr.textContent, format);
@@ -63,19 +58,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Función para convertir una IP a diferentes formatos
     function convertIPFormat(ip, format) {
         if (!ip) return '';
-        
         try {
             const octets = ip.split('.');
-            
             switch(format) {
                 case 'binario':
                     return octets.map(oct => parseInt(oct).toString(2).padStart(8, '0')).join('.');
                 case 'hexadecimal':
                     return octets.map(oct => parseInt(oct).toString(16).padStart(2, '0')).join('.');
-                default: // decimal
+                default:
                     return ip;
             }
         } catch (e) {
@@ -85,9 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // =============================================
-    // 2. Validación de Formularios (Existente)
+    // 2. Validación de Formularios (Actualizado)
     // =============================================
-    // Validación para IPs
     const ipInputs = document.querySelectorAll('input[type="text"][name*="ip"]');
     ipInputs.forEach(input => {
         input.addEventListener('input', function() {
@@ -95,7 +86,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Validación para máscaras
     const maskInputs = document.querySelectorAll('input[name*="mascara"]');
     maskInputs.forEach(input => {
         input.addEventListener('input', function() {
@@ -103,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Validación para conexiones
     const conexionesInput = document.getElementById('conexiones');
     if(conexionesInput) {
         conexionesInput.addEventListener('input', function() {
@@ -112,12 +101,66 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // =============================================
-    // 3. Tooltips para Información (Nueva funcionalidad)
+    // 3. Nuevo: Manejo de pestañas y persistencia
+    // =============================================
+    const tabLinks = document.querySelectorAll('.nav-link');
+    tabLinks.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Limpiar formatos activos al cambiar de pestaña
+            formatButtons.forEach(btn => {
+                if(btn.classList.contains('active')) {
+                    btn.classList.remove('active');
+                    document.querySelector('.format-btn[data-format="decimal"]').classList.add('active');
+                    updateDisplayFormat('decimal');
+                }
+            });
+        });
+    });
+
+    // =============================================
+    // 4. Tooltips (Mejorado)
     // =============================================
     const infoIcons = document.querySelectorAll('.info-icon');
     infoIcons.forEach(icon => {
-        icon.addEventListener('click', function() {
-            // Implementar tooltips si es necesario
+        new bootstrap.Tooltip(icon, {
+            trigger: 'hover focus'
+        });
+    });
+    // =============================================
+    // 5. Control de visualización de pestañas (NUEVO)
+    // =============================================
+    const subnetTab = document.querySelector('#subnet-tab');
+    const hostsTab = document.querySelector('#hosts-tab');
+    const subnetContent = document.querySelector('#subnet-content');
+    const hostsContent = document.querySelector('#hosts-content');
+
+    // Función para actualizar el contenido visible
+    function updateTabContent(activeTab) {
+        if (activeTab === 'subnet') {
+            if (subnetContent) subnetContent.style.display = 'block';
+            if (hostsContent) hostsContent.style.display = 'none';
+        } else if (activeTab === 'hosts') {
+            if (subnetContent) subnetContent.style.display = 'none';
+            if (hostsContent) hostsContent.style.display = 'block';
+        }
+    }
+
+    // Event listeners para las pestañas
+    if (subnetTab && hostsTab) {
+        subnetTab.addEventListener('click', () => updateTabContent('subnet'));
+        hostsTab.addEventListener('click', () => updateTabContent('hosts'));
+    }
+
+    // Inicializar según la pestaña activa al cargar
+    const activeTab = document.querySelector('.nav-link.active').id;
+    updateTabContent(activeTab.replace('-tab', ''));
+    
+    // Integración con Bootstrap tabs para sincronización
+    const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+    tabEls.forEach(tabEl => {
+        tabEl.addEventListener('shown.bs.tab', function(event) {
+            const targetTab = event.target.id.replace('-tab', '');
+            updateTabContent(targetTab);
         });
     });
 });

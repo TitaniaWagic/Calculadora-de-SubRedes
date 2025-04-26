@@ -111,7 +111,7 @@
                         <p class="mb-0"><strong>/{{ mascara_calculada }}</strong> ({{ netmask }})</p>
                     </div>
                 {% endif %}
-            
+
                 {% if subredes %}
                     <div class="alert alert-success mb-3">
                         <h4>Resumen de Subredes</h4>
@@ -124,58 +124,59 @@
                         {% endif %}
                     </div>
 
+                    <!-- TABLA DE SUBNETES (solo visible en pestaña de subredes) -->
+                    <div id="subnet-content" class="tab-content-item">
+                        <h3 class="mb-3">Subredes Calculadas</h3>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Subred</th>
+                                        <th>Dirección de Subred</th>
+                                        <th>Máscara</th>
+                                        <th>Primera IP</th>
+                                        <th>Última IP</th>
+                                        <th>Broadcast</th>
+                                        <th>Hosts Disponibles</th>
+                                        <th>Hosts Requeridos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for subred in subredes %}
+                                    <tr>
+                                        <td>{{ subred.id }}</td>
+                                        <td class="font-monospace" data-ip='{{ subred.direccion_subred|tojson if subred.direccion_subred is defined else "" }}'>
+                                            {{ subred.direccion_subred }}
+                                        </td>
+                                        <td class="font-monospace" data-mask='{{ subred.mascara|tojson if subred.mascara is defined else "" }}'>
+                                            {{ subred.mascara }} {% if subred.prefixlen is defined %}(/{{ subred.prefixlen }}){% endif %}
+                                        </td>
+                                        <td class="font-monospace" data-first='{{ subred.primera_ip|tojson if subred.primera_ip is defined else "" }}'>
+                                            {{ subred.primera_ip }}
+                                        </td>
+                                        <td class="font-monospace" data-last='{{ subred.ultima_ip|tojson if subred.ultima_ip is defined else "" }}'>
+                                            {{ subred.ultima_ip }}
+                                        </td>
+                                        <td class="font-monospace" data-broadcast='{{ subred.broadcast|tojson if subred.broadcast is defined else "" }}'>
+                                            {{ subred.broadcast }}
+                                        </td>
+                                        <td>{{ subred.hosts_reales }}</td>
+                                        <td>{{ subred.hosts_necesarios }}</td>
+                                    </tr>
+                                    {% endfor %}
 
-            
-                    
-
-                    <h3 class="mb-3">Subredes Calculadas</h3>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Subred</th>
-                                    <th>Dirección de Subred</th>
-                                    <th>Máscara</th>
-                                    <th>Primera IP</th>
-                                    <th>Última IP</th>
-                                    <th>Broadcast</th>
-                                    <th>Hosts Disponibles</th>
-                                    <th>Hosts Requeridos</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for subred in subredes %}
-                                <tr>
-                                    <td>{{ subred.id }}</td>
-                                    <td class="font-monospace" data-ip='{{ subred.direccion_subred|tojson if subred.direccion_subred is defined else "" }}'>
-                                        {{ subred.direccion_subred }}
-                                    </td>
-                                    <td class="font-monospace" data-mask='{{ subred.mascara|tojson if subred.mascara is defined else "" }}'>
-                                        {{ subred.mascara }} {% if subred.prefixlen is defined %}(/{{ subred.prefixlen }}){% endif %}
-                                    </td>
-                                    <td class="font-monospace" data-first='{{ subred.primera_ip|tojson if subred.primera_ip is defined else "" }}'>
-                                        {{ subred.primera_ip }}
-                                    </td>
-                                    <td class="font-monospace" data-last='{{ subred.ultima_ip|tojson if subred.ultima_ip is defined else "" }}'>
-                                        {{ subred.ultima_ip }}
-                                    </td>
-                                    <td class="font-monospace" data-broadcast='{{ subred.broadcast|tojson if subred.broadcast is defined else "" }}'>
-                                        {{ subred.broadcast }}
-                                    </td>
-                                    <td>{{ subred.hosts_reales }}</td>
-                                    <td>{{ subred.hosts_necesarios }}</td>
-                                </tr>
-                                {% endfor %}
-
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 {% endif %}
                       
                 {% if hosts_info %}
-                    <h3 class="mb-3">Hosts Válidos</h3>
-                    <div class="card">
-                        <div class="card-body">
+                    <!-- TABLA DE HOSTS (solo visible en pestaña de hosts) -->
+                    <div id="hosts-content" class="tab-content-item">
+                        <h3 class="mb-3">Hosts Válidos</h3>
+                        <div class="card">
+                            <div class="card-body">
                             <p><strong>Dirección de Red:</strong>
                                 <span class="font-monospace" id="network-addr">{{ hosts_info.direccion_red }}</span>
                             </p>
