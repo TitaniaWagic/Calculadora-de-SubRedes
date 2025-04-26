@@ -158,6 +158,7 @@ def index():
             conexiones = request.form.get("conexiones", "").strip()
             mascara = request.form.get("mascara", "").strip()
             hosts = request.form.get("hosts", "").strip()
+
             # Validación de IP
             try:
                 if ip_base:
@@ -165,23 +166,7 @@ def index():
             except ValueError:
                 data["error"] = "Dirección IP no válida"
             else:
-
-                if mascara and not ip_base:
-                    ip_base = "192.168.0.0"  # IP por defecto
-                    try:
-                        red = ipaddress.IPv4Network(f"{ip_base}/{mascara}", strict=False)
-                        data["subredes"] = calcular_subredes_conIPMascara(ip_base, mascara)
-                        data["hosts_info"] = calcular_host(ip_base, mascara)
-                    except ValueError:
-                        data["error"] = "Formato de máscara no válido"
-                        
-                # Cálculo por hosts necesarios
-                if hosts and hosts.isdigit():
-                    data["mascara_calculada"] = calcular_mascara(hosts)
-                    if data["mascara_calculada"]:
-                        data["netmask"] = str(ipaddress.IPv4Network(f'0.0.0.0/{data["mascara_calculada"]}').netmask)
-
-                # Cálculo por conexiones
+                # Cálculo por conexiones (PRIORIDAD ALTA)
                 if conexiones:
                     conexiones_lista = [c.strip() for c in conexiones.split(",") if c.strip().isdigit()]
                     if conexiones_lista:
@@ -189,8 +174,15 @@ def index():
                         data["subredes"] = resultado["subredes"]
                         data["total_subredes"] = resultado["total_subredes"]
                         data["total_hosts_posibles"] = resultado.get("total_hosts_posibles")
-                # Cálculo por IP/Máscara
-                if mascara:
+                
+                # Cálculo por hosts necesarios (si no hay conexiones)
+                elif hosts and hosts.isdigit():
+                    data["mascara_calculada"] = calcular_mascara(hosts)
+                    if data["mascara_calculada"]:
+                        data["netmask"] = str(ipaddress.IPv4Network(f'0.0.0.0/{data["mascara_calculada"]}').netmask)
+                
+                # Cálculo por IP/Máscara (si no hay conexiones ni hosts)
+                elif mascara:
                     try:
                         red = ipaddress.IPv4Network(f"{ip_base}/{mascara}", strict=False)
                         data["subredes"] = calcular_subredes_conIPMascara(ip_base, mascara)
@@ -201,6 +193,7 @@ def index():
         except Exception as e:
             data["error"] = f"Error en el procesamiento: {str(e)}"
             print(data["error"])
+
 
     return render_template("index.html", **data)
 if __name__ == '__main__':
