@@ -202,6 +202,17 @@ def index():
 
 
     return render_template("index.html", **data)
+    
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    try:
+        # Prueba básica de que la app funciona
+        with app.test_client() as client:
+            response = client.get('/')
+            if response.status_code != 200:
+                raise RuntimeError("App test failed")
+        
+        app.run(host='0.0.0.0', port=port)
+    except Exception as e:
+        print(f"ERROR FATAL: {str(e)}")
+        raise
