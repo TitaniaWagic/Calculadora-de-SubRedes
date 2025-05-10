@@ -211,9 +211,5 @@ def health():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    print(f"Starting app on port {port}")  # Log para diagnóstico
-    try:
-        app.run(host='0.0.0.0', port=port)
-    except Exception as e:
-        print(f"Failed to start app: {str(e)}")
-        raise
+    print(f"🔌 Starting app on port {port}")  # Mensaje visible en logs
+    app.run(host='0.0.0.0', port=port)
