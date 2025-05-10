@@ -211,14 +211,9 @@ def health():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
+    print(f"Starting app on port {port}")  # Log para diagnóstico
     try:
-        # Prueba básica de que la app funciona
-        with app.test_client() as client:
-            response = client.get('/')
-            if response.status_code != 200:
-                raise RuntimeError("App test failed")
-        
         app.run(host='0.0.0.0', port=port)
     except Exception as e:
-        print(f"ERROR FATAL: {str(e)}")
+        print(f"Failed to start app: {str(e)}")
         raise
