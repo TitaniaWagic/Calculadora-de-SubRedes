@@ -208,6 +208,10 @@ def health():
     """Endpoint de health check para verificación de servicio"""
     return 'OK', 200
 
+@app.route('/google6e34cf3d95f4d299.html')
+def google_verify():
+    return open('google6e34cf3d95f4d299.html').read()
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
