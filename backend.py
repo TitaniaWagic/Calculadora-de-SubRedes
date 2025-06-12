@@ -212,6 +212,10 @@ def health():
 def google_verify():
     return open('google6e34cf3d95f4d299.html').read()
 
+@app.route('/sitemap.xml')
+def serve_sitemap():
+    return send_from_directory(app.root_path, 'sitemap.xml')
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
