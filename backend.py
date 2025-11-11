@@ -208,13 +208,10 @@ def health():
     """Endpoint de health check para verificación de servicio"""
     return 'OK', 200
 
-@app.route('/google6e34cf3d95f4d299.html')
-def google_verify():
-    return open('google6e34cf3d95f4d299.html').read()
-
-@app.route('/sitemap.xml')
-def serve_sitemap():
-    return send_from_directory(app.root_path, 'sitemap.xml')
+@app.route('/googlef601140aa8b769d7.html')
+def google_verification():
+    """Serve Google Search Console verification file from static folder"""
+    return send_from_directory(app.static_folder, 'googlef601140aa8b769d7.html')
 
 
 if __name__ == '__main__':
