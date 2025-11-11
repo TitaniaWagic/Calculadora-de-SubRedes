@@ -1,4 +1,4 @@
-# Proyecto interdisciplinario
+# Proyecto
 Calculadora de SubRedes
 
 Enlace a la calculadora: https://calculadora-de-subredes.onrender.com/
